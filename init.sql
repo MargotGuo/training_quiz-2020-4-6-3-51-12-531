@@ -1,13 +1,16 @@
 CREATE DATABASE IF NOT EXISTS parking_lot_system DEFAULT CHARSET utf8mb4;
 USE parking_lot_system;
 
-DROP TABLE IF EXISTS parking_lot_information;
-CREATE TABLE parking_lot_information(
-    id CHAR(1) PRIMARY KEY,
-    capacity INT NOT NULL
+DROP TABLE IF EXISTS parking_lot_A;
+CREATE TABLE parking_lot_A(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    status ENUM('EMPTY','IN_USE'),
+    car_id CHAR(6)
 ) ENGINE = InnoDB DEFAULT CHARSET utf8mb4;
 
-INSERT INTO parking_lot_information VALUES ('A', 8);
-INSERT INTO parking_lot_information VALUES ('B', 10);
-
-SELECT * FROM parking_lot_information;
+DROP TABLE IF EXISTS parking_lot_B;
+CREATE TABLE parking_lot_B(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    status ENUM('EMPTY','IN_USE'),
+    car_id CHAR(6)
+) ENGINE = InnoDB DEFAULT CHARSET utf8mb4;
