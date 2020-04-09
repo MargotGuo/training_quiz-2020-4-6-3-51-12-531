@@ -1,6 +1,13 @@
+import entities.Ticket;
+import entities.ParkingLot;
+import exception.InvalidTicketException;
+import exception.ParkingLotFullException;
+
 import java.util.Scanner;
 
 public class Application {
+
+  public static ParkingLot parkingLot = new ParkingLot();
 
   public static void main(String[] args) {
     operateParking();
@@ -15,7 +22,11 @@ public class Application {
         System.out.println("系统已退出");
         break;
       }
-      handle(choice);
+      try {
+        handle(choice);
+      } catch (ParkingLotFullException | InvalidTicketException e) {
+        System.out.println(e.getMessage());
+      }
     }
   }
 
@@ -31,7 +42,7 @@ public class Application {
       String carInfo = scanner.next();
       String ticket = park(carInfo);
       String[] ticketDetails = ticket.split(",");
-      System.out.format("已将您的车牌号为%s的车辆停到%s停车场%s号车位，停车券为：%s，请您妥善保存。\n", ticketDetails[2], ticketDetails[0], ticketDetails[1], ticket);
+      System.out.format("已将您的车牌号为%s的车辆停到%s停车场%s号车位，停车券为：\"%s\"，请您妥善保存。\n", ticketDetails[2], ticketDetails[0], ticketDetails[1], ticket);
     }
     else if (choice.equals("3")) {
       System.out.println("请输入停车券信息\n格式为\"停车场编号1,车位编号,车牌号\" 如 \"A,1,8\"：");
@@ -42,15 +53,23 @@ public class Application {
   }
 
   public static void init(String initInfo) {
-
+    parkingLot.deleteData();
+    String[] parkingLotArray = initInfo.split(",");
+    for (String inputParkingLotMessage : parkingLotArray) {
+      String[] parkingLotDetail = inputParkingLotMessage.split(":");
+      String parkingLotId = parkingLotDetail[0];
+      int capacity = Integer.parseInt(parkingLotDetail[1]);
+      parkingLot.initParkingLot(parkingLotId, capacity);
+    }
   }
 
   public static String park(String carNumber) {
-    return "";
+    Ticket ticket = parkingLot.parkCar(carNumber);
+    return ticket.toString();
   }
 
-  public static String fetch(String ticket) {
-    return "";
+  public static String fetch(String userTicket) {
+    Ticket ticket = new Ticket(userTicket);
+    return parkingLot.fetchCar(ticket);
   }
-
 }
