@@ -1,5 +1,8 @@
+import entities.Receipt;
 import entities.Ticket;
-import entities.ParkingLot;
+import entities.employee.Employee;
+import entities.employee.Manager;
+import entities.employee.SmartEmployee;
 import exception.InvalidTicketException;
 import exception.ParkingLotFullException;
 
@@ -7,7 +10,7 @@ import java.util.Scanner;
 
 public class Application {
 
-  public static ParkingLot parkingLot = new ParkingLot();
+  private static Manager manager = new Manager();
 
   public static void main(String[] args) {
     operateParking();
@@ -47,29 +50,33 @@ public class Application {
     else if (choice.equals("3")) {
       System.out.println("请输入停车券信息\n格式为\"停车场编号1,车位编号,车牌号\" 如 \"A,1,8\"：");
       String ticket = scanner.next();
-      String car = fetch(ticket);
-      System.out.format("已为您取到车牌号为%s的车辆，很高兴为您服务，祝您生活愉快!\n", car);
+      Receipt receipt = fetch(ticket);
+      System.out.format("已为您取到车牌号为%s的车辆，您的停车时间为%.1f小时，停车费用为%d元，很高兴为您服务，祝您生活愉快!\n",
+          receipt.getCarNumber(), receipt.getTime(), receipt.getPrice());
     }
   }
 
   public static void init(String initInfo) {
-    parkingLot.deleteData();
+
+    manager.deleteData();
     String[] parkingLotArray = initInfo.split(",");
     for (String inputParkingLotMessage : parkingLotArray) {
       String[] parkingLotDetail = inputParkingLotMessage.split(":");
       String parkingLotId = parkingLotDetail[0];
       int capacity = Integer.parseInt(parkingLotDetail[1]);
-      parkingLot.initParkingLot(parkingLotId, capacity);
+      manager.initParkingLot(parkingLotId, capacity);
     }
   }
 
   public static String park(String carNumber) {
-    Ticket ticket = parkingLot.parkCar(carNumber);
+    Employee employee = manager.getNextParkEmployee();
+    Ticket ticket = employee.parkCar(carNumber);
     return ticket.toString();
   }
 
-  public static String fetch(String userTicket) {
+  public static Receipt fetch(String userTicket) {
+    Employee employee = manager.getNextFetchEmployee();
     Ticket ticket = new Ticket(userTicket);
-    return parkingLot.fetchCar(ticket);
+    return employee.fetchCar(ticket);
   }
 }
